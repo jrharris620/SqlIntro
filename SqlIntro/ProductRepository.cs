@@ -17,6 +17,7 @@ namespace SqlIntro
         public ProductRepository(IDbConnection conn)
         {
             _conn = conn;
+            _conn.Open();
         }
 
         /// <summary>
@@ -27,11 +28,18 @@ namespace SqlIntro
         {
 
             var cmd = _conn.CreateCommand();
-            cmd.CommandText = "SELECT Name, ListPrice from product WHERE ListPrice < 100 ORDER BY ListPrice desc"; //TODO:  Write a SELECT statement that gets all products
+            cmd.CommandText = 
+                "SELECT Name, ListPrice, ModifiedDate from product " +
+                "WHERE ListPrice < 100 ORDER BY ListPrice desc"; //TODO:  Write a SELECT statement that gets all products
             var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                yield return new Product { Name = dr["Name"].ToString(), ListPrice = (double)dr["ListPrice"] };
+                yield return new Product
+                {
+                    Name = dr["Name"].ToString(),
+                    ListPrice = (double)dr["ListPrice"],
+                    ModifiedDate = (DateTime)dr["ModifiedDate"]
+                };
             }
 
         }

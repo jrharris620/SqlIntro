@@ -11,9 +11,10 @@ namespace SqlIntro
         {
             var connectionString = "Server=localhost;Database=adventureworks;Uid=root;Pwd=jaonna111;"; 
             var repo = new ProductRepository(new MySqlConnection(connectionString));
-            foreach (var prod in repo.GetProducts().Take(1))
+            foreach (var prod in repo.GetProducts())
             {
-                Console.WriteLine("Product Name:" + prod.Name + " " + prod.ListPrice);
+                Console.WriteLine
+                    ("Product Name:" + prod.Name + " " + prod.ListPrice + " " + prod.ModifiedDate.ToLongDateString());
             }
 
            
