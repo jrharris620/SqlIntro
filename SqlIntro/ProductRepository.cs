@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,30 +10,30 @@ using MySql.Data.MySqlClient;
 
 namespace SqlIntro
 {
-    public class ProductRepository
+    public class ProductRepository : IDisposable
     {
-        private readonly string _connectionString;
+        private readonly IDbConnection _conn;
 
-        public ProductRepository(string connectionString)
+        public ProductRepository(IDbConnection conn)
         {
-            _connectionString = connectionString;
+            _conn = conn;
         }
+
         /// <summary>
         /// Reads all the products from the products table
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Product> GetProducts()
         {
-            using (var conn = new MySqlConnection(_connectionString))
+
+            var cmd = _conn.CreateCommand();
+            cmd.CommandText = "SELECT Name, ListPrice from product WHERE ListPrice < 100 ORDER BY ListPrice desc"; //TODO:  Write a SELECT statement that gets all products
+            var dr = cmd.ExecuteReader();
+            while (dr.Read())
             {
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = ""; //TODO:  Write a SELECT statement that gets all products
-                var dr = cmd.ExecuteReader();
-                while (dr.Read())
-                {
-                    yield return new Product { Name = dr["Name"].ToString() };
-                }
+                yield return new Product { Name = dr["Name"].ToString(), ListPrice = (double)dr["ListPrice"] };
             }
+
         }
 
         /// <summary>
@@ -41,12 +42,9 @@ namespace SqlIntro
         /// <param name="id"></param>
         public void DeleteProduct(int id)
         {
-            using (var conn = new MySqlConnection(_connectionString))
-            {
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = ""; //Write a delete statement that deletes by id
-                cmd.ExecuteNonQuery();
-            }
+            var cmd = _conn.CreateCommand();
+            cmd.CommandText = "DELETE from products WHERE ListPrice = 0"; //Write a delete statement that deletes by id
+            cmd.ExecuteNonQuery();
         }
         /// <summary>
         /// Updates the Product in the database
@@ -56,14 +54,18 @@ namespace SqlIntro
         {
             //This is annoying and unnecessarily tedious for large objects.
             //More on this in the future...  Nothing to do here..
-            using (var conn = new MySqlConnection(_connectionString))
-            {
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = "update product set name = @name where id = @id";
-                cmd.Parameters.AddWithValue("@name", prod.Name);
-                cmd.Parameters.AddWithValue("@id", prod.Id);
-                cmd.ExecuteNonQuery();
-            }
+
+            var cmd = _conn.CreateCommand();
+            cmd.CommandText = "update product set name = @name where id = @id";
+            var param = cmd.CreateParameter();
+            param.ParameterName = "name";
+            param.Value = prod.Name;
+            cmd.Parameters.Add(param);
+            var param2 = cmd.CreateParameter();
+            param2.ParameterName = "id";
+            param2.Value = prod.Id;
+            cmd.Parameters.Add(param2);
+            cmd.ExecuteNonQuery();
         }
         /// <summary>
         /// Inserts a new Product into the database
@@ -71,13 +73,20 @@ namespace SqlIntro
         /// <param name="prod"></param>
         public void InsertProduct(Product prod)
         {
-            using (var conn = new MySqlConnection(_connectionString))
-            {
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = "INSERT into product (name) values(@name)";
-                cmd.Parameters.AddWithValue("@name", prod.Name);
-                cmd.ExecuteNonQuery();
-            }
+
+            var cmd = _conn.CreateCommand();
+            cmd.CommandText = "INSERT into product (name) values(@name)";
+            var param = cmd.CreateParameter();
+            param.ParameterName = "@name";
+            param.Value = prod.Name;
+            
+            //cmd.Parameters.AddWithValue("@name", prod.Name);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void Dispose()
+        {
+            _conn?.Dispose();
         }
     }
 }
