@@ -26,10 +26,9 @@ namespace SqlIntro
         /// <returns></returns>
         public IEnumerable<Product> GetProducts()
         {
-
             var cmd = _conn.CreateCommand();
             cmd.CommandText = 
-                "SELECT * Name, ProductId, Color from product WHERE ProductId = 2"; 
+                "SELECT * from product ORDER BY ProductId asc"; 
             var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
@@ -64,7 +63,7 @@ namespace SqlIntro
             //More on this in the future...  Nothing to do here..
 
             var cmd = _conn.CreateCommand();
-            cmd.CommandText = "update product set color = 'blue'  where productId = 2";
+            cmd.CommandText = "update product set color = 'blue'  where productId = 3";
             cmd.AddParam("name", prod.Name);
             cmd.AddParam("id", prod.ProductId);
             cmd.ExecuteNonQuery();
@@ -75,10 +74,20 @@ namespace SqlIntro
         /// <param name="prod"></param>
         public void InsertProduct(Product prod)
         {
-
             var cmd = _conn.CreateCommand();
-            cmd.CommandText = "INSERT into product (name) values(@name)";
-            cmd.AddParam("name", prod.Name);
+
+            var cText = "INSERT into product (" + string.Join(", ", prod.Params.Keys) + ")";
+
+            var keyValues = prod.Params.Keys.Select(a => "@" + a);
+            cText += "VALUES (" + string.Join(", ", keyValues) + ")";
+
+            cmd.CommandText = cText;
+
+            foreach (var keyValuePair in prod.Params)
+            {
+                cmd.AddParam("@" + keyValuePair.Key, keyValuePair.Value);
+            }
+
             cmd.ExecuteNonQuery();
         }
 

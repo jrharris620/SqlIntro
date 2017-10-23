@@ -14,9 +14,22 @@ namespace SqlIntro
             foreach (var prod in repo.GetProducts())
             {
                 Console.WriteLine
-                    ("Product Name:" + prod.Name + " " + prod.ProductId + " " + prod.Color);
+                    (prod.ProductId + " " + prod.Name +   " " + prod.Color);
             }
 
+            var product = new Product
+            {
+                ProductId = 5,
+                Name = "Bike Rack",
+                ProductNumber = "BR-1004",
+                Color = "Blue",
+                SafetyStockLevel = 1000,
+                ReorderPoint = 500,
+                StandardCost = 500.75,
+                ListPrice = 1025.36
+            };
+
+            repo.InsertProduct(product);
            
             Console.ReadLine();
         }
