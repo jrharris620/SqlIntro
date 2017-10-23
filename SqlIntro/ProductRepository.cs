@@ -29,7 +29,7 @@ namespace SqlIntro
 
             var cmd = _conn.CreateCommand();
             cmd.CommandText = 
-                "SELECT Name, ProductId, Color from product WHERE ProductId = 2"; 
+                "SELECT * Name, ProductId, Color from product WHERE ProductId = 2"; 
             var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
@@ -64,7 +64,7 @@ namespace SqlIntro
             //More on this in the future...  Nothing to do here..
 
             var cmd = _conn.CreateCommand();
-            cmd.CommandText = "update product set color = 'red'  where productId = 2";
+            cmd.CommandText = "update product set color = 'blue'  where productId = 2";
             cmd.AddParam("name", prod.Name);
             cmd.AddParam("id", prod.ProductId);
             cmd.ExecuteNonQuery();

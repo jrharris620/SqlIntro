@@ -14,7 +14,7 @@ namespace SqlIntro
             foreach (var prod in repo.GetProducts())
             {
                 Console.WriteLine
-                    ("Product Name:" + prod.Name + " " + prod.ListPrice + " " + prod.ModifiedDate.DayOfWeek);
+                    ("Product Name:" + prod.Name + " " + prod.ProductId + " " + prod.Color);
             }
 
            
