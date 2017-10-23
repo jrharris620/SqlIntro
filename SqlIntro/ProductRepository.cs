@@ -29,16 +29,15 @@ namespace SqlIntro
 
             var cmd = _conn.CreateCommand();
             cmd.CommandText = 
-                "SELECT Name, ListPrice, ModifiedDate from product " +
-                "WHERE ListPrice < 100 ORDER BY ListPrice desc"; //TODO:  Write a SELECT statement that gets all products
+                "SELECT Name, ProductId, Color from product WHERE ProductId = 2"; 
             var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
                 yield return new Product
                 {
                     Name = dr["Name"].ToString(),
-                    ListPrice = (double)dr["ListPrice"],
-                    ModifiedDate = (DateTime)dr["ModifiedDate"]
+                    ProductId = (int)dr["ProductId"],
+                    Color = dr["Color"].ToString()
                 };
             }
 
@@ -47,11 +46,12 @@ namespace SqlIntro
         /// <summary>
         /// Deletes a Product from the database
         /// </summary>
-        /// <param name="id"></param>
-        public void DeleteProduct(int id)
+        /// <param name="ProductId"></param>
+        public void DeleteProduct(int ProductId)
         {
             var cmd = _conn.CreateCommand();
-            cmd.CommandText = "DELETE from products WHERE ListPrice = 0"; //Write a delete statement that deletes by id
+            cmd.CommandText = "DELETE from products WHERE productId = 2";
+            cmd.AddParam("id", ProductId);
             cmd.ExecuteNonQuery();
         }
         /// <summary>
@@ -64,15 +64,9 @@ namespace SqlIntro
             //More on this in the future...  Nothing to do here..
 
             var cmd = _conn.CreateCommand();
-            cmd.CommandText = "update product set name = @name where id = @id";
-            var param = cmd.CreateParameter();
-            param.ParameterName = "name";
-            param.Value = prod.Name;
-            cmd.Parameters.Add(param);
-            var param2 = cmd.CreateParameter();
-            param2.ParameterName = "id";
-            param2.Value = prod.Id;
-            cmd.Parameters.Add(param2);
+            cmd.CommandText = "update product set color = 'red'  where productId = 2";
+            cmd.AddParam("name", prod.Name);
+            cmd.AddParam("id", prod.ProductId);
             cmd.ExecuteNonQuery();
         }
         /// <summary>
@@ -84,11 +78,7 @@ namespace SqlIntro
 
             var cmd = _conn.CreateCommand();
             cmd.CommandText = "INSERT into product (name) values(@name)";
-            var param = cmd.CreateParameter();
-            param.ParameterName = "@name";
-            param.Value = prod.Name;
-            
-            //cmd.Parameters.AddWithValue("@name", prod.Name);
+            cmd.AddParam("name", prod.Name);
             cmd.ExecuteNonQuery();
         }
 
