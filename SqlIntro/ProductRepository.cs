@@ -10,7 +10,7 @@ using MySql.Data.MySqlClient;
 
 namespace SqlIntro
 {
-    public class ProductRepository : IDisposable
+    public class ProductRepository
     {
         private readonly IDbConnection _conn;
 
@@ -25,7 +25,6 @@ namespace SqlIntro
         /// <returns></returns>
         public IEnumerable<Product> GetProducts()
         {
-            _conn.Open();
             var cmd = _conn.CreateCommand();
             cmd.CommandText = 
                 "SELECT * from product ORDER BY ProductId asc"; 
@@ -39,8 +38,6 @@ namespace SqlIntro
                     Color = dr["Color"].ToString()
                 };
             }
-
-            Dispose();
         }
 
         /// <summary>
@@ -49,12 +46,10 @@ namespace SqlIntro
         /// <param name="ProductId"></param>
         public void DeleteProduct(int ProductId)
         {
-            _conn.Open();
             var cmd = _conn.CreateCommand();
-            cmd.CommandText = "DELETE from product WHERE productId = 998";
+            cmd.CommandText = "DELETE from product WHERE productId = @id";
             cmd.AddParam("id", ProductId);
             cmd.ExecuteNonQuery();
-            Dispose();
         }
         /// <summary>
         /// Updates the Product in the database
@@ -64,13 +59,11 @@ namespace SqlIntro
         {
             //This is annoying and unnecessarily tedious for large objects.
             //More on this in the future...  Nothing to do here..
-            _conn.Open();
             var cmd = _conn.CreateCommand();
             cmd.CommandText = "update product set name = @name where productId = @id";
             cmd.AddParam("@name", prod.Name);
             cmd.AddParam("@id", prod.ProductId);
             cmd.ExecuteNonQuery();
-            Dispose();
         }
         /// <summary>
         /// Inserts a new Product into the database
@@ -78,7 +71,6 @@ namespace SqlIntro
         /// <param name="prod"></param>
         public void InsertProduct(Product prod)
         {
-            _conn.Open();
             var cmd = _conn.CreateCommand();
 
             var cText = "INSERT into product (" + string.Join(", ", prod.Params.Keys) + ")";
@@ -94,12 +86,6 @@ namespace SqlIntro
             }
 
             cmd.ExecuteNonQuery();
-            Dispose();
-        }
-
-        public void Dispose()
-        {
-            _conn?.Dispose();
         }
     }
 }
