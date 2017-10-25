@@ -43,12 +43,12 @@ namespace SqlIntro
         /// <summary>
         /// Deletes a Product from the database
         /// </summary>
-        /// <param name="ProductId"></param>
-        public void DeleteProduct(int ProductId)
+        /// <param name="productId"></param>
+        public void DeleteProduct(int productId)
         {
             var cmd = _conn.CreateCommand();
             cmd.CommandText = "DELETE from product WHERE productId = @id";
-            cmd.AddParam("id", ProductId);
+            cmd.AddParam("id", productId);
             cmd.ExecuteNonQuery();
         }
         /// <summary>
