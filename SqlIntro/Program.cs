@@ -19,8 +19,7 @@ namespace SqlIntro
                 var repo = new ProductRepository(conn);
                 foreach (var prod in repo.GetProducts())
                 {
-                    Console.WriteLine
-                        (prod.ProductId + " " + prod.Name + " " + prod.Color);
+                    Console.WriteLine(prod.ProductId + " " + prod.Name + " " + prod.Color);
                 }
 
                 var product = new Product
