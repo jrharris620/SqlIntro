@@ -37,5 +37,16 @@ namespace SqlIntro
         {
             conn.Execute("INSERT into product (Name) values (@name)", new { name = prod.Name });
         }
+
+
+        public IEnumerable<Product> InnerJoin()
+        {
+            return conn.Query<Product>("SELECT pr.*, p.Name from product p inner join productreview pr on p.Productid = pr.ProductId");
+        }
+
+        public IEnumerable<Product> LeftJoin()
+        {
+            return conn.Query<Product>("SELECT * from product p left join productreview pr on p.Productid = pr.ProductId");
+        }
     }
 }

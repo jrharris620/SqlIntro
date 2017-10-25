@@ -16,7 +16,7 @@ namespace SqlIntro
             {
                 conn.Open();
 
-                var repo = new ProductRepository(conn);
+                var repo = new DapperProductRepository(conn);
                 foreach (var prod in repo.GetProducts())
                 {
                     Console.WriteLine(prod.ProductId + " " + prod.Name + " " + prod.Color);
